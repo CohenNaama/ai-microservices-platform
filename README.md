@@ -2,6 +2,16 @@
 
 A distributed microservices architecture for intelligent text processing with FastAPI, Kafka, and AI services.
 
+---
+
+## 🧭 System Architecture
+
+![System Architecture](./assets/system-architecture.png)
+
+This diagram illustrates the flow of data through the AI-powered microservices platform.
+
+---
+
 ## 📌 Features
 
 - Kafka-based message queue

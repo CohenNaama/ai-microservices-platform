@@ -57,6 +57,11 @@ The system is built with a microservices architecture to promote high availabili
 5. `Notifier` saves the result and notifies the user.
 6. `Dashboard` displays data and system status in real time.
 
+
+### 🖼️ System Architecture Diagram
+
+![System Architecture](../assets/system-architecture.png)
+
 ---
 
 ## 🔒 Security & Compliance
