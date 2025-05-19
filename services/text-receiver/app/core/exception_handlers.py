@@ -5,7 +5,7 @@ Includes custom logic for:
 - Validation errors (422)
 - Uncaught application errors (500)
 """
-
+from typing import Awaitable
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
