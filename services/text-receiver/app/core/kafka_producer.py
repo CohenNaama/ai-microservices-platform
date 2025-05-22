@@ -7,8 +7,8 @@ Initializes the producer and provides a function to send validated messages to a
 import json
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
-from app.core.config import KAFKA_BROKER_URL, KAFKA_TOPIC
-from app.core.logging_config import logger
+from core.config import KAFKA_BROKER_URL, KAFKA_TOPIC
+from core.logging_config import logger
 
 
 def get_kafka_producer() -> KafkaProducer:
@@ -20,7 +20,7 @@ def get_kafka_producer() -> KafkaProducer:
     """
     return KafkaProducer(
         bootstrap_servers=KAFKA_BROKER_URL,
-        value_serializer=lambda v: json.dumps(v).encode("utf-8")
+        value_serializer=lambda v: json.dumps(v, ensure_ascii=False).encode("utf-8")
     )
 
 
@@ -37,6 +37,7 @@ def send_text_to_kafka(data: dict) -> bool:
     Returns:
         bool: True if the message was successfully sent, False otherwise.
     """
+
     if not isinstance(data, dict):
         logger.error("❌ Data to send is not a dictionary: %s", data)
         return False
@@ -46,7 +47,8 @@ def send_text_to_kafka(data: dict) -> bool:
         return False
 
     try:
-        logger.debug("📤 Sending message to Kafka: %s", data)
+        logger.debug("Sending message to Kafka: %s", data)
+
         producer.send(KAFKA_TOPIC, value=data)
         producer.flush()
         logger.info("✅ Message sent to Kafka topic '%s'", KAFKA_TOPIC)
