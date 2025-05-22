@@ -8,12 +8,13 @@ import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch
 from app.main import app
+import core.kafka_producer as kafka_producer
 
 client = TestClient(app)
 
 
 @pytest.mark.api
-@patch("app.api.routes.send_text_to_kafka")
+@patch("app.api.routes.kafka_producer.send_text_to_kafka")
 def test_send_valid_text(mock_send_kafka):
     """
     Test sending a valid text payload to /text endpoint.
@@ -28,7 +29,7 @@ def test_send_valid_text(mock_send_kafka):
 
 
 @pytest.mark.api
-@patch("app.api.routes.send_text_to_kafka")
+@patch("app.api.routes.kafka_producer.send_text_to_kafka")
 def test_send_empty_text(mock_send_kafka):
     """
     Test sending an empty text string.
@@ -42,7 +43,9 @@ def test_send_empty_text(mock_send_kafka):
 
 
 @pytest.mark.api
-@patch("app.api.routes.send_text_to_kafka")
+@patch("app.api.routes.kafka_producer.send_text_to_kafka")
+
+# @patch("app.api.routes.send_text_to_kafka")
 def test_kafka_failure_returns_500(mock_send_kafka):
     """
     Simulate Kafka send failure.

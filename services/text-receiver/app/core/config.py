@@ -4,10 +4,9 @@ Configuration loader for environment variables.
 Provides access to Kafka broker URL and topic name via dotenv, with default fallbacks.
 """
 
-
 import os
 from dotenv import load_dotenv
-from app.core.logging_config import logger
+from core.logging_config import logger
 
 # Load environment variables from .env file
 load_dotenv()

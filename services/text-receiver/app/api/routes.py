@@ -6,9 +6,9 @@ Routes:
 """
 
 from fastapi import APIRouter, HTTPException
-from app.models.input import TextRequest
-from app.core.kafka_producer import send_text_to_kafka
-from app.core.logging_config import logger
+from models.input import TextRequest
+from core.logging_config import logger
+import core.kafka_producer as kafka_producer
 
 router = APIRouter()
 
@@ -28,10 +28,10 @@ def receive_text(payload: TextRequest):
         HTTPException: 400 - invalid input, 500 - Kafka failure.
     """
     if not payload.text or not payload.text.strip():
-        logger.warning("🚫 Empty or missing 'text' field in request.")
+        logger.warning("Empty or missing 'text' field in request.")
         raise HTTPException(status_code=400, detail="The 'text' field is required and cannot be empty.")
 
-    success = send_text_to_kafka(payload.model_dump())
+    success = kafka_producer.send_text_to_kafka(payload.model_dump())
 
     if not success:
         raise HTTPException(status_code=500, detail="Failed to send message to Kafka")

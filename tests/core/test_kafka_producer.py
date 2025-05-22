@@ -10,6 +10,8 @@ from app.core.kafka_producer import send_text_to_kafka
 from kafka.errors import KafkaError
 
 
+
+
 @pytest.mark.kafka
 @patch("app.core.kafka_producer.producer")
 def test_send_valid_text(mock_producer):

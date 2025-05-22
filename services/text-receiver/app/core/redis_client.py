@@ -6,12 +6,12 @@ with full error handling and logging.
 """
 
 import redis
-from redis.exceptions import RedisError, ConnectionError, TimeoutError
-from app.core.config import get_env_variable
-from app.core.logging_config import logger
+from redis.exceptions import RedisError, ConnectionError
+from core.config import get_env_variable
+from core.logging_config import logger
 
 # Load Redis URL from environment
-REDIS_URL: str = get_env_variable("REDIS_URL", "redis://localhost:6379")
+REDIS_URL: str = get_env_variable("REDIS_URL", "redis://redis:6379")
 
 try:
     # Initialize Redis client
@@ -45,7 +45,7 @@ def set_cache(key: str, value: str, ttl_seconds: int = 3600) -> bool:
 
     try:
         redis_client.set(name=key, value=value, ex=ttl_seconds)
-        logger.info("📦 Cached key '%s' (TTL: %ds)", key, ttl_seconds)
+        logger.info("Cached key '%s' (TTL: %ds)", key, ttl_seconds)
         return True
     except RedisError as e:
         logger.exception("❌ Failed to set Redis key '%s': %s", key, e)
@@ -69,9 +69,9 @@ def get_cache(key: str) -> str | None:
     try:
         value = redis_client.get(name=key)
         if value is None:
-            logger.info("📭 Redis key '%s' not found.", key)
+            logger.info("Redis key '%s' not found.", key)
         else:
-            logger.info("📬 Redis hit for key '%s'", key)
+            logger.info("Redis hit for key '%s'", key)
         return value
     except RedisError as e:
         logger.exception("❌ Failed to get Redis key '%s': %s", key, e)
@@ -91,10 +91,10 @@ def delete_cache(key: str) -> bool:
     try:
         result = redis_client.delete(key)
         if result:
-            logger.info("🗑️ Redis key '%s' deleted.", key)
+            logger.info("Redis key '%s' deleted.", key)
             return True
         else:
-            logger.info("ℹ️ Redis key '%s' not found to delete.", key)
+            logger.info("Redis key '%s' not found to delete.", key)
             return False
     except RedisError as e:
         logger.exception("❌ Failed to delete Redis key '%s': %s", key, e)

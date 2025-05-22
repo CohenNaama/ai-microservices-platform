@@ -9,7 +9,7 @@ from typing import Awaitable
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
-from app.core.logging_config import logger
+from core.logging_config import logger
 from starlette.responses import Response
 
 
