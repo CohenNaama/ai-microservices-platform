@@ -39,10 +39,9 @@ def is_running_in_docker() -> bool:
     return os.path.exists("/.dockerenv")
 
 
-# Kafka broker: docker uses 'kafka:29092', local uses 'localhost:9092'
+# Kafka configuration
 KAFKA_BROKER_URL = (
     "kafka:29092" if is_running_in_docker() else "localhost:9092"
 )
-# Kafka configuration
-# KAFKA_BROKER_URL: str = get_env_variable("KAFKA_BROKER_URL", "localhost:9092")
+
 KAFKA_TOPIC: str = get_env_variable("TEXT_RECEIVER_TOPIC", "text-topic")

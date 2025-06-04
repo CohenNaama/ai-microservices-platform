@@ -30,7 +30,6 @@ def process_message(message: dict) -> None:
     Returns:
         None
     """
-
     # Validate structure
     if not isinstance(message, dict):
         logger.error("❌ Received non-dict Kafka message: %s", message)
@@ -100,6 +99,9 @@ def get_kafka_consumer() -> KafkaConsumer:
 
 
 def _consume_loop():
+    """
+    Starts an infinite loop to consume and process Kafka messages.
+    """
     consumer = get_kafka_consumer()
     logger.info("Listening to Kafka topic '%s' on %s", KAFKA_TOPIC, KAFKA_BROKER_URL)
     try:
@@ -110,6 +112,12 @@ def _consume_loop():
 
 
 async def start_consumer_async() -> None:
+    """
+    Runs the Kafka consumer loop in a background thread using asyncio.
+
+    Returns:
+        None
+    """
     try:
         consumer = get_kafka_consumer()
         logger.info("Listening to Kafka topic '%s' on %s", KAFKA_TOPIC, KAFKA_BROKER_URL)
