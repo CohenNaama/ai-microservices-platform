@@ -27,7 +27,7 @@ async def validation_exception_handler(
     Returns:
         Response: JSON 422 response with error details.
     """
-    logger.warning("❌ Validation error: %s", exc)
+    logger.warning("Validation error: %s", exc)
     return JSONResponse(
         status_code=422,
         content={"detail": exc.errors(), "body": exc.body},

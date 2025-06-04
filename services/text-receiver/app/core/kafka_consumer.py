@@ -30,10 +30,9 @@ def process_message(message: dict) -> None:
     Returns:
         None
     """
-
     # Validate structure
     if not isinstance(message, dict):
-        logger.error("❌ Received non-dict Kafka message: %s", message)
+        logger.error("Received non-dict Kafka message: %s", message)
         return
 
     text = message.get("text")
@@ -41,18 +40,21 @@ def process_message(message: dict) -> None:
         logger.warning("Invalid or missing 'text' field: %s", message)
         return
 
-    logger.info(f"✅ Sent to Kafka: {reprlib.repr(text)}")
+    logger.info(f"Sent to Kafka: {reprlib.repr(text)}")
 
     # Deduplication logic
     if is_already_processed(text):
         logger.info("Skipping duplicate text.")
         return
 
-    logger.info("✅ Received text message: %s", text)
+    logger.info("Received text message: %s", text)
 
     # Optional metadata
     user_id = message.get("user_id", "unknown")
-
+    text_id = message.get("text_id")
+    if not text_id:
+        logger.warning("Received message without 'text_id'. Skipping.")
+        return
     # Redis cache
     timestamp = datetime.utcnow().isoformat()
     cache_key = f"text:{user_id}:{timestamp}"
@@ -67,6 +69,7 @@ def process_message(message: dict) -> None:
     db = SessionLocal()
     try:
         record = ProcessedText(
+            text_id=text_id,
             user_id=user_id,
             original_text=text
         )
@@ -74,10 +77,13 @@ def process_message(message: dict) -> None:
         db.add(record)
         db.commit()
         db.refresh(record)
-        logger.info("Text stored in DB with ID: %s", record.id)
+        logger.info(
+            "Text processed and saved successfully | user_id='%s' | text_id='%s' | db_id=%s",
+            user_id, text_id, record.id
+        )
     except Exception as e:
         db.rollback()
-        logger.exception("❌ Failed to insert text into PostgreSQL: %s", e)
+        logger.exception("Failed to insert text into PostgreSQL: %s", e)
     finally:
         db.close()
 
@@ -100,16 +106,25 @@ def get_kafka_consumer() -> KafkaConsumer:
 
 
 def _consume_loop():
+    """
+    Starts an infinite loop to consume and process Kafka messages.
+    """
     consumer = get_kafka_consumer()
     logger.info("Listening to Kafka topic '%s' on %s", KAFKA_TOPIC, KAFKA_BROKER_URL)
     try:
         for msg in consumer:
             process_message(msg.value)
     except Exception as e:
-        logger.exception("❌ Kafka consumer loop crashed: %s", e)
+        logger.exception("Kafka consumer loop crashed: %s", e)
 
 
 async def start_consumer_async() -> None:
+    """
+    Runs the Kafka consumer loop in a background thread using asyncio.
+
+    Returns:
+        None
+    """
     try:
         consumer = get_kafka_consumer()
         logger.info("Listening to Kafka topic '%s' on %s", KAFKA_TOPIC, KAFKA_BROKER_URL)
@@ -117,8 +132,8 @@ async def start_consumer_async() -> None:
         await asyncio.to_thread(_consume_loop, consumer)
 
     except KafkaError as e:
-        logger.critical("❌ Kafka connection failed: %s", e)
+        logger.critical("Kafka connection failed: %s", e)
     except asyncio.CancelledError:
         logger.info("Consumer cancelled.")
     except Exception as e:
-        logger.exception("❌ Unexpected error in Kafka consumer: %s", e)
+        logger.exception("Unexpected error in Kafka consumer: %s", e)

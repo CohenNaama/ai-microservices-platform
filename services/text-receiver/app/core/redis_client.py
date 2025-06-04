@@ -18,9 +18,9 @@ try:
     redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=True)
     # Test connection
     redis_client.ping()
-    logger.info(f"✅ Connected to Redis at {REDIS_URL}")
+    logger.info(f"Connected to Redis at {REDIS_URL}")
 except (ConnectionError, RedisError) as e:
-    logger.critical(f"❌ Failed to connect to Redis: {e}")
+    logger.critical(f"Failed to connect to Redis: {e}")
 
 
 def set_cache(key: str, value: str, ttl_seconds: int = 3600) -> bool:
@@ -36,11 +36,11 @@ def set_cache(key: str, value: str, ttl_seconds: int = 3600) -> bool:
         bool: True if the value was set successfully, False otherwise.
     """
     if not key or not isinstance(key, str):
-        logger.warning("⚠️ Invalid Redis key: %s", key)
+        logger.warning("Invalid Redis key: %s", key)
         return False
 
     if not isinstance(value, str):
-        logger.warning("⚠️ Redis value must be a string. Got: %s", type(value))
+        logger.warning("Redis value must be a string. Got: %s", type(value))
         return False
 
     try:
@@ -48,7 +48,7 @@ def set_cache(key: str, value: str, ttl_seconds: int = 3600) -> bool:
         logger.info("Cached key '%s' (TTL: %ds)", key, ttl_seconds)
         return True
     except RedisError as e:
-        logger.exception("❌ Failed to set Redis key '%s': %s", key, e)
+        logger.exception("Failed to set Redis key '%s': %s", key, e)
         return False
 
 
@@ -63,7 +63,7 @@ def get_cache(key: str) -> str | None:
         str | None: The stored value, or None if not found or on error.
     """
     if not key:
-        logger.warning("⚠️ Redis get: empty key provided.")
+        logger.warning("Redis get: empty key provided.")
         return None
 
     try:
@@ -74,7 +74,7 @@ def get_cache(key: str) -> str | None:
             logger.info("Redis hit for key '%s'", key)
         return value
     except RedisError as e:
-        logger.exception("❌ Failed to get Redis key '%s': %s", key, e)
+        logger.exception("Failed to get Redis key '%s': %s", key, e)
         return None
 
 
@@ -97,5 +97,5 @@ def delete_cache(key: str) -> bool:
             logger.info("Redis key '%s' not found to delete.", key)
             return False
     except RedisError as e:
-        logger.exception("❌ Failed to delete Redis key '%s': %s", key, e)
+        logger.exception("Failed to delete Redis key '%s': %s", key, e)
         return False

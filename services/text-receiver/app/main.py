@@ -24,23 +24,23 @@ async def lifespan(app: FastAPI):
     - Creates DB tables if not already existing
     - Starts Kafka consumer in a background thread
     """
-    logger.info("🔄 Starting lifespan")
+    logger.info("Starting lifespan")
 
     # Ensure DB schema is ready
     try:
         Base.metadata.create_all(bind=engine)
-        logger.info("✅ Database tables ensured.")
+        logger.info("Database tables ensured.")
     except Exception as e:
-        logger.exception("❌ Failed to create database tables: %s", e)
+        logger.exception("Failed to create database tables: %s", e)
 
     # Start Kafka consumer
     thread = threading.Thread(target=_consume_loop, daemon=True)
     thread.start()
-    logger.info("🎧 Kafka consumer thread started.")
+    logger.info("Kafka consumer thread started.")
 
     yield
 
-    logger.info("🛑 Shutting down lifespan")
+    logger.info("Shutting down lifespan")
 
 
 app = FastAPI(

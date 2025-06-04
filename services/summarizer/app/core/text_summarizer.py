@@ -1,14 +1,11 @@
 """
-summarizer_service.py
+text_summarizer.py
 
 Handles interaction with the OpenAI API to summarize input text.
 """
-import sys
 import openai
-from core.config import OPENAI_API_KEY
-from core.logging_config import logger
-
-print("PYTHONPATH:", sys.path)
+from app.core.config import OPENAI_API_KEY
+from app.core.logging_config import logger
 
 
 def summarize_text(text: str) -> str:
@@ -22,14 +19,14 @@ def summarize_text(text: str) -> str:
         str: The generated summary. Returns fallback string on error.
     """
     if not text or not isinstance(text, str) or not text.strip():
-        logger.warning("❌ Invalid input for summarization. Must be non-empty string.")
+        logger.warning("Invalid input for summarization. Must be non-empty string.")
         return "Invalid input"
 
-    logger.info("🧠 Sending text to OpenAI for summarization...")
+    logger.info("Sending text to OpenAI for summarization...")
 
     try:
         response = openai.ChatCompletion.create(
-            api_key=OPENAI_API_KEY,  # ✅ מוגדר לכל קריאה — לא גלובלי
+            api_key=OPENAI_API_KEY,
             model="gpt-3.5-turbo",
             temperature=0.5,
             max_tokens=100,
@@ -40,12 +37,12 @@ def summarize_text(text: str) -> str:
         )
 
         summary = response["choices"][0]["message"]["content"].strip()
-        logger.info("✅ Summary received from OpenAI.")
+        logger.info("Summary received from OpenAI.")
         return summary
 
     except openai.error.OpenAIError as oe:
-        logger.exception("❌ OpenAI API error: %s", oe)
+        logger.exception("OpenAI API error: %s", oe)
         return "OpenAI summarization failed"
     except Exception as e:
-        logger.exception("❌ Unexpected error during summarization: %s", e)
+        logger.exception("Unexpected error during summarization: %s", e)
         return "Summarization failed"

@@ -8,9 +8,11 @@ and launches the Kafka consumer in the background.
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
-from core.kafka_consumer import _consume_loop
-from core.logging_config import logger
-from core.exception_handlers import validation_exception_handler, global_exception_handler
+from app.core.kafka_consumer import _consume_loop
+from app.core.logging_config import logger
+from app.api.routes import router
+from app.core.init_db import init_db
+from app.core.exception_handlers import validation_exception_handler, global_exception_handler
 import threading
 
 
@@ -21,18 +23,23 @@ async def lifespan(app: FastAPI):
 
     Starts the Kafka consumer loop in a background thread.
     """
-    logger.info("🔄 Starting Summarizer lifespan...")
+    logger.info("Starting Summarizer lifespan...")
 
     try:
+        # Initialize database tables
+        init_db()
+        logger.info("Database tables created (if not exist).")
+
+        # Start Kafka consumer
         thread = threading.Thread(target=_consume_loop, daemon=True)
         thread.start()
-        logger.info("🎧 Kafka consumer thread started.")
+        logger.info("Kafka consumer thread started.")
     except Exception as e:
-        logger.exception("❌ Failed to start Kafka consumer thread: %s", e)
+        logger.exception("Failed during startup: %s", e)
 
     yield
 
-    logger.info("🛑 Shutting down Summarizer lifespan.")
+    logger.info("Shutting down Summarizer lifespan.")
 
 
 app = FastAPI(
@@ -42,8 +49,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# If you add API endpoints in the future:
-# app.include_router(router)
 
+app.include_router(router)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, global_exception_handler)

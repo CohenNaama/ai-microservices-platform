@@ -39,11 +39,11 @@ def send_text_to_kafka(data: dict) -> bool:
     """
 
     if not isinstance(data, dict):
-        logger.error("❌ Data to send is not a dictionary: %s", data)
+        logger.error("Data to send is not a dictionary: %s", data)
         return False
 
     if "text" not in data:
-        logger.warning("⚠️ Missing required 'text' field in payload: %s", data)
+        logger.warning("Missing required 'text' field in payload: %s", data)
         return False
 
     try:
@@ -51,8 +51,8 @@ def send_text_to_kafka(data: dict) -> bool:
 
         producer.send(KAFKA_TOPIC, value=data)
         producer.flush()
-        logger.info("✅ Message sent to Kafka topic '%s'", KAFKA_TOPIC)
+        logger.info("Message sent to Kafka topic '%s'", KAFKA_TOPIC)
         return True
     except KafkaError as e:
-        logger.exception("❌ Kafka send failed: %s", e)
+        logger.exception("Kafka send failed: %s", e)
         return False
