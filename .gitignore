@@ -8,7 +8,7 @@ __pycache__/
 .venv/
 env/
 venv/
-.env
+services/text-receiver/.env
 
 # PyCharm
 .idea/

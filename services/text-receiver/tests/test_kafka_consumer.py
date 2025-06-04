@@ -6,7 +6,6 @@ Covers message validation, deduplication logic, and Redis caching using mocking.
 
 import pytest
 from unittest.mock import patch
-
 from app.core.kafka_consumer import process_message
 
 

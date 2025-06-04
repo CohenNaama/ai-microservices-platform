@@ -7,8 +7,8 @@ with full error handling and logging.
 
 import redis
 from redis.exceptions import RedisError, ConnectionError
-from core.config import get_env_variable
-from core.logging_config import logger
+from app.core.config import get_env_variable
+from app.core.logging_config import logger
 
 # Load Redis URL from environment
 REDIS_URL: str = get_env_variable("REDIS_URL", "redis://redis:6379")

@@ -5,7 +5,7 @@ Defines the structure of the 'processed_texts' table.
 """
 
 from sqlalchemy import Column, Integer, DateTime, Unicode
-from core.db import Base
+from app.core.db import Base
 from datetime import datetime
 
 

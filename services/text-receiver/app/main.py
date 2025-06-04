@@ -7,12 +7,12 @@ Initializes the app, registers routers and global exception handlers.
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
-from api.routes import router
-from core.exception_handlers import validation_exception_handler, global_exception_handler
-from core.kafka_consumer import _consume_loop
-from core.logging_config import logger
-
-
+from app.api.routes import router
+from app.core.exception_handlers import validation_exception_handler, global_exception_handler
+from app.core.kafka_consumer import _consume_loop
+from app.core.db import engine
+from app.models.db_models import Base
+from app.core.logging_config import logger
 import threading
 
 
@@ -21,14 +21,23 @@ async def lifespan(app: FastAPI):
     """
     Handles application lifespan events.
 
-    Starts Kafka consumer in a background thread on startup.
+    - Creates DB tables if not already existing
+    - Starts Kafka consumer in a background thread
     """
     logger.info("🔄 Starting lifespan")
 
+    # Ensure DB schema is ready
+    try:
+        Base.metadata.create_all(bind=engine)
+        logger.info("✅ Database tables ensured.")
+    except Exception as e:
+        logger.exception("❌ Failed to create database tables: %s", e)
+
+    # Start Kafka consumer
     thread = threading.Thread(target=_consume_loop, daemon=True)
     thread.start()
+    logger.info("🎧 Kafka consumer thread started.")
 
-    logger.info("✅ Yielding lifespan")
     yield
 
     logger.info("🛑 Shutting down lifespan")
@@ -41,6 +50,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Register routes and exception handlers
 app.include_router(router)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, global_exception_handler)

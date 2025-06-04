@@ -7,8 +7,8 @@ Initializes the producer and provides a function to send validated messages to a
 import json
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
-from core.config import KAFKA_BROKER_URL, KAFKA_TOPIC
-from core.logging_config import logger
+from app.core.config import KAFKA_BROKER_URL, KAFKA_TOPIC
+from app.core.logging_config import logger
 
 
 def get_kafka_producer() -> KafkaProducer:

@@ -9,13 +9,13 @@ import asyncio
 import json
 from kafka import KafkaConsumer
 from kafka.errors import KafkaError
-from core.config import KAFKA_BROKER_URL, KAFKA_TOPIC
-from core.logging_config import logger
-from core.redis_client import set_cache
+from app.core.config import KAFKA_BROKER_URL, KAFKA_TOPIC
+from app.core.logging_config import logger
+from app.core.redis_client import set_cache
 from datetime import datetime
-from core.deduplication import is_already_processed
-from core.db import SessionLocal
-from models.db_models import ProcessedText
+from app.core.deduplication import is_already_processed
+from app.core.db import SessionLocal
+from app.models.db_models import ProcessedText
 import reprlib
 
 

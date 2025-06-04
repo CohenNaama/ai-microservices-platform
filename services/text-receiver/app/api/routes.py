@@ -6,9 +6,9 @@ Routes:
 """
 
 from fastapi import APIRouter, HTTPException
-from models.input import TextRequest
-from core.logging_config import logger
-import core.kafka_producer as kafka_producer
+from app.models.input import TextRequest
+from app.core.logging_config import logger
+import app.core.kafka_producer as kafka_producer
 
 router = APIRouter()
 

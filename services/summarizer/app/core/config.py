@@ -1,14 +1,15 @@
 """
 Configuration loader for environment variables.
 
-Provides access to Kafka broker URL and topic name via dotenv, with default fallbacks.
+Provides access to Kafka broker URL and topic names via dotenv,
+with default fallbacks and Docker auto-detection.
 """
 
 import os
 from dotenv import load_dotenv
-from app.core.logging_config import logger
+from core.logging_config import logger
 
-# Load environment variables from .env file
+# Load .env file variables
 load_dotenv()
 
 
@@ -40,9 +41,12 @@ def is_running_in_docker() -> bool:
 
 
 # Kafka broker: docker uses 'kafka:29092', local uses 'localhost:9092'
-KAFKA_BROKER_URL = (
-    "kafka:29092" if is_running_in_docker() else "localhost:9092"
-)
-# Kafka configuration
-# KAFKA_BROKER_URL: str = get_env_variable("KAFKA_BROKER_URL", "localhost:9092")
-KAFKA_TOPIC: str = get_env_variable("TEXT_RECEIVER_TOPIC", "text-topic")
+KAFKA_BROKER_URL = "kafka:29092" if is_running_in_docker() else "localhost:9092"
+
+# Kafka topics
+KAFKA_CONSUME_TOPIC: str = get_env_variable("SUMMARIZER_INPUT_TOPIC", "text-topic")
+KAFKA_PRODUCE_TOPIC: str = get_env_variable("SUMMARIZER_OUTPUT_TOPIC", "summarized-texts")
+
+# OpenAI
+OPENAI_API_KEY: str = get_env_variable("OPENAI_API_KEY")
+

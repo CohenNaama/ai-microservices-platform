@@ -5,8 +5,8 @@ Prevents re-processing of identical messages across the system.
 """
 
 import hashlib
-from core.redis_client import get_cache, set_cache
-from core.logging_config import logger
+from app.core.redis_client import get_cache, set_cache
+from app.core.logging_config import logger
 
 
 def is_already_processed(text: str) -> bool:
